@@ -1,12 +1,12 @@
 <?php
 
-include_once "dbhandler.php"; // Using database connection file here
+include_once "dbhandler.php"; //using database connection file here
 
-$id = $_GET['id']; // get id through query string
+$id = $_GET['id']; //get id through query string
 
-$qry = mysqli_query($conn, "select * from adressbuch where id='$id'"); // select query
+$qry = mysqli_query($conn, "select * from adressbuch where id='$id'"); //select query
 
-$data = mysqli_fetch_array($qry); // fetch data
+$data = mysqli_fetch_array($qry); //fetch data
 
 $herr = "";
 $frau = "";
@@ -18,7 +18,7 @@ if ($data['anrede'] == "Frau") {
     $frau = "selected";
 }
 
-if (isset($_POST['update'])) // when click on Update button
+if (isset($_POST['update'])) //when click on Update button
 {
     $anrede = $_POST['anrede'];
     $vorname = $_POST['vorname'];
@@ -39,8 +39,8 @@ if (isset($_POST['update'])) // when click on Update button
     );
 
     if ($edit) {
-        mysqli_close($conn); // Close connection
-        header("location:../index.php"); // redirects to all records page
+        mysqli_close($conn); //close connection
+        header("location:../index.php"); //redirects to main page
         exit;
     } else {
         echo mysqli_error($error);
@@ -62,8 +62,9 @@ if (isset($_POST['update'])) // when click on Update button
 </head>
 
 <body>
+
     <header>
-        <h1>Adressbuch</h1>
+        <h1>Bearbeiten</h1>
     </header>
 
     <form class="input-area" method="POST">
@@ -78,6 +79,7 @@ if (isset($_POST['update'])) // when click on Update button
         <input type="text" name="stadt" value="<?php echo $data['stadt'] ?>" placeholder="Stadt" />
         <input type="text" name="tel" value="<?php echo $data['telefon'] ?>" placeholder="Tel" />
 
-        <button type="submit" name="update" value="Update">Update</button>
+        <button type="submit" name="update" value="Update">Speichern</button>
     </form>
+
 </body>

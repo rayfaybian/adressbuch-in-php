@@ -5,7 +5,7 @@ include_once 'dbhandler.php';
 $anrede = $_POST['anrede'];
 $vorname = $_POST['vorname'];
 $nachname = $_POST['nachname'];
-$straße = $_POST['str'];
+$str = $_POST['str'];
 $stadt = $_POST['stadt'];
 $tel = $_POST['tel'];
 

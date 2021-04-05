@@ -12,12 +12,12 @@ body {
 }
 
 header {
-  margin-top: 40px;
-  width: 800px;
+  margin: 40px auto;
   font-size: 4rem;
   font-weight: bold;
   text-align: center;
 }
+
 .input-area {
   display: flex;
   flex-direction: column;
