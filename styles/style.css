@@ -7,17 +7,19 @@ body {
 }
 
 .background {
-  margin-top: 25px;
+  margin-top: 40px;
+  padding: 50px 0;
+  width: 850px;
   background-color: #dddddd;
+  min-height: 80vh;
 }
 
 header {
-  margin: 40px auto;
+  margin: auto;
   font-size: 4rem;
   font-weight: bold;
   text-align: center;
 }
-
 .input-area {
   display: flex;
   flex-direction: column;
@@ -33,7 +35,15 @@ header {
   border-radius: 4px;
 }
 
-.input-area button {
+input:focus,
+select:focus,
+button:focus {
+  outline-width: 0px;
+  border-color: #007aff;
+  outline-color: #007aff;
+}
+
+button {
   margin-top: 20px;
   width: fit-content;
   background-color: white;
@@ -43,10 +53,10 @@ header {
   border-radius: 4px;
 }
 
-.input-area select {
+select {
   width: 158px;
   width: 206px;
-  height: 30px;
+  height: 35px;
   font-size: 1.1rem;
   border-radius: 4px;
 }
@@ -59,6 +69,17 @@ button:hover {
   background-color: #007aff;
   color: white;
   cursor: pointer;
+}
+
+.sort-area {
+  margin-bottom: 20px;
+  font-weight: bold;
+  padding: 8px;
+}
+
+.sort-area select {
+  width: auto;
+  margin: 0 8px 0 0;
 }
 
 .table {
@@ -101,4 +122,17 @@ i {
 
 .fa-trash:hover {
   color: #ff3b30;
+}
+
+a {
+  color: #383737;
+  text-decoration: none;
+}
+
+a:visited {
+  color: #383737;
+}
+
+a:hover {
+  color: #007aff;
 }

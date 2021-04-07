@@ -12,7 +12,6 @@ if (mysqli_connect_errno()) {
     echo ("Connect failed:" . mysqli_connect_error());
     exit();
 }
-//echo mysqli_character_set_name($conn);
 
 /* change character set to utf8mb4 */
 if (!mysqli_set_charset($conn, "utf8mb4")) {
