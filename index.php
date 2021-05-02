@@ -21,31 +21,7 @@
         <h1>Adressbuch</h1>
     </header>
 
-    <a href=includes/edit.php?id=2><button>TESTBUTTON</button></a>
-    <!--<form class="input-area" action="includes/insert.php" method="POST">
-        <select name="anrede">
-            <option value="" selected disabled hidden>Anrede</option>
-
-            <?php
-/*
-            $sql = "SELECT * FROM anrede";
-            $result = mysqli_query($conn, $sql);
-            $resultCheck = mysqli_num_rows($result);
-            if ($resultCheck > 0) {
-                while ($row = mysqli_fetch_assoc($result)) {
-                    echo "<option value=" . $row['anredeID'] . ">" . $row['anredeText'] . "</option>";
-                }
-            }
-            */?>
-
-        </select>
-        <input type="text" name="vorname" placeholder="Vorname"/>
-        <input type="text" name="nachname" placeholder="Nachname"/>
-        <input type="text" name="adresse" placeholder="Adresse"/>
-        <input type="text" name="stadt" placeholder="Stadt"/>
-        <input type="text" name="telefon" placeholder="Telefon"/>
-        <button type="submit">Speichern</button>
-    </form>-->
+    <a href=includes/form.php?id=2><button>TESTBUTTON</button></a>
 
     <?php
 
@@ -91,7 +67,7 @@
         <td>" . $row['adresse'] . "</td>
         <td>" . $row['stadt'] . "</td>
         <td>" . $row['telefon'] . "</td>
-        <td><a href=includes/edit.php?id=" . $row['id'] . "><i class=\"fas fa-pen\"></a></i></td>
+        <td><a href=includes/form.php?id=" . $row['id'] . "><i class=\"fas fa-pen\"></a></i></td>
         <td><a href=includes/delete.php?id=" . $row['id'] . "><i class=\"fas fa-trash\"></a></i></td>
       </tr>";
         }
