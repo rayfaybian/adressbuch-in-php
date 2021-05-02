@@ -18,7 +18,7 @@ $stmt = mysqli_stmt_init($conn);
 if (!mysqli_stmt_prepare($stmt, $sql)) {
       echo "SQL error";
 } else {
-      mysqli_stmt_bind_param($stmt, "ssssss", $anrede, $vorname, $nachname, $adresse, $stadt, $telefon);
+      mysqli_stmt_bind_param($stmt, "isssss", $anrede, $vorname, $nachname, $adresse, $stadt, $telefon);
       mysqli_stmt_execute($stmt);
 }
 
