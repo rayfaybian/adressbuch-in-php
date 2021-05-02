@@ -38,7 +38,7 @@
     (isset($_GET['sort'])) ? $sort = $_GET['sort'] : $sort = 'ASC';
 
     include_once 'includes/dbhandler.php';
-    $sql = "SELECT * FROM adressbuch ORDER BY $order $sort";
+    $sql = "SELECT * FROM adressbuch LEFT JOIN anrede ON adressbuch.anrede = anrede.anredeID ORDER BY $order $sort";
     $result = mysqli_query($conn, $sql);
     $resultCheck = mysqli_num_rows($result);
 
@@ -70,7 +70,7 @@
       while ($row = mysqli_fetch_assoc($result)) {
         echo
         "<tr>
-        <td>" . $row['anrede'] . "</td>
+        <td>" . $row['anredeText'] . "</td>
         <td>" . $row['vorname'] . "</td>
         <td>" . $row['nachname'] . "</td>
         <td>" . $row['adresse'] . "</td>
