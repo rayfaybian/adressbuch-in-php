@@ -9,14 +9,9 @@ if (isset($id)) {
     $data = mysqli_fetch_array($qry);
 }
 
-if (isset($_POST['update'])) /*BESTEHENDEN EINTRAG BEARBEITEN*/
-{
-    $anrede = mysqli_real_escape_string($conn, $_POST['anrede']);
-    $vorname = mysqli_real_escape_string($conn, $_POST['vorname']);
-    $nachname = mysqli_real_escape_string($conn, $_POST['nachname']);
-    $adresse = mysqli_real_escape_string($conn, $_POST['adresse']);
-    $stadt = mysqli_real_escape_string($conn, $_POST['stadt']);
-    $telefon = mysqli_real_escape_string($conn, $_POST['telefon']);
+if (isset($_POST['update'])) /*BESTEHENDEN EINTRAG BEARBEITEN*/ {
+
+    $newData = getData($conn);
 
     /*Updating data in table using prepared statements*/
     $edit = "UPDATE adressbuch SET anrede=?, vorname=?, nachname=?, adresse=?, stadt=?, telefon=? WHERE id=?";
@@ -25,7 +20,7 @@ if (isset($_POST['update'])) /*BESTEHENDEN EINTRAG BEARBEITEN*/
     if (!mysqli_stmt_prepare($stmt, $edit)) {
         echo "SQL error";
     } else {
-        mysqli_stmt_bind_param($stmt, "isssssi", $anrede, $vorname, $nachname, $adresse, $stadt, $telefon, $id);
+        mysqli_stmt_bind_param($stmt, "isssssi", $newData['anrede'], $newData['vorname'], $newData['nachname'], $newData['adresse'], $newData['stadt'], $newData['telefon'], $id);
         mysqli_stmt_execute($stmt);
     };
     /*Returning to main page*/
@@ -33,16 +28,9 @@ if (isset($_POST['update'])) /*BESTEHENDEN EINTRAG BEARBEITEN*/
 }
 
 
+if (isset($_POST['insert'])) /*NEUEN EINTRAG SPEICHERN*/ {
 
-if (isset($_POST['insert'])) /*NEUEN EINTRAG SPEICHERN*/
-
-{
-    $anrede = mysqli_real_escape_string($conn, $_POST['anrede']);
-    $vorname = mysqli_real_escape_string($conn, $_POST['vorname']);
-    $nachname = mysqli_real_escape_string($conn, $_POST['nachname']);
-    $adresse = mysqli_real_escape_string($conn, $_POST['adresse']);
-    $stadt = mysqli_real_escape_string($conn, $_POST['stadt']);
-    $telefon = mysqli_real_escape_string($conn, $_POST['telefon']);
+    $newData = getData($conn);
 
     /*Inserting new data into table using prepared statements*/
     $sql = "INSERT INTO `adressbuch` (id, anrede, vorname, nachname, adresse, stadt, telefon)
@@ -52,7 +40,8 @@ VALUES (NULL, ?, ?, ?, ?, ?, ?);";
     if (!mysqli_stmt_prepare($stmt, $sql)) {
         echo "SQL error";
     } else {
-        mysqli_stmt_bind_param($stmt, "isssss", $anrede, $vorname, $nachname, $adresse, $stadt, $telefon);
+        mysqli_stmt_bind_param($stmt, "isssss", $newData['anrede'], $newData['vorname'],
+            $newData['nachname'], $newData['adresse'], $newData['stadt'], $newData['telefon']);
         mysqli_stmt_execute($stmt);
     }
 
@@ -60,8 +49,26 @@ VALUES (NULL, ?, ?, ?, ?, ?, ?);";
     header("Location: ../index.php");
 }
 
-?>
+function getData($conn)
+{
+    $anrede = mysqli_real_escape_string($conn, $_POST['anrede']);
+    $vorname = mysqli_real_escape_string($conn, $_POST['vorname']);
+    $nachname = mysqli_real_escape_string($conn, $_POST['nachname']);
+    $adresse = mysqli_real_escape_string($conn, $_POST['adresse']);
+    $stadt = mysqli_real_escape_string($conn, $_POST['stadt']);
+    $telefon = mysqli_real_escape_string($conn, $_POST['telefon']);
 
+
+    return array("anrede" => $anrede,
+        "vorname" => $vorname,
+        "nachname" => $nachname,
+        "adresse" => $adresse,
+        "stadt" => $stadt,
+        "telefon" => $telefon);
+
+}
+
+?>
 
 <!DOCTYPE html>
 <html lang="en">
