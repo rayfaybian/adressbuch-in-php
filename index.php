@@ -20,12 +20,14 @@
     <header>
         <h1>Adressbuch</h1>
     </header>
-    <form class="input-area" action="includes/insert.php" method="POST">
+
+    <a href=includes/edit.php?id=2><button>TESTBUTTON</button></a>
+    <!--<form class="input-area" action="includes/insert.php" method="POST">
         <select name="anrede">
             <option value="" selected disabled hidden>Anrede</option>
 
             <?php
-
+/*
             $sql = "SELECT * FROM anrede";
             $result = mysqli_query($conn, $sql);
             $resultCheck = mysqli_num_rows($result);
@@ -34,7 +36,7 @@
                     echo "<option value=" . $row['anredeID'] . ">" . $row['anredeText'] . "</option>";
                 }
             }
-            ?>
+            */?>
 
         </select>
         <input type="text" name="vorname" placeholder="Vorname"/>
@@ -43,7 +45,7 @@
         <input type="text" name="stadt" placeholder="Stadt"/>
         <input type="text" name="telefon" placeholder="Telefon"/>
         <button type="submit">Speichern</button>
-    </form>
+    </form>-->
 
     <?php
 
