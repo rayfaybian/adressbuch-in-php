@@ -55,7 +55,7 @@
       <colgroup></colgroup>
       <thead>
         <tr>
-          <th><a href='?order=anrede&&sort=$sort'>Anrede <span class='fas fa-sort'></span></a></th>
+          <th><a href='?order=anredeText&&sort=$sort'>Anrede <span class='fas fa-sort'></span></a></th>
           <th><a href='?order=vorname&&sort=$sort'>Vorname <span class='fas fa-sort'></span></a></th>
           <th><a href='?order=nachname&&sort=$sort'>Nachname <span class='fas fa-sort'></span></a></th>
           <th><a href='?order=adresse&&sort=$sort'>Adresse <span class='fas fa-sort'></span></a></th>
