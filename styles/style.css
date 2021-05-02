@@ -9,13 +9,24 @@ body {
 .background {
   margin-top: 40px;
   padding: 50px 0;
-  width: 850px;
+  width: 1100px;
   background-color: #dddddd;
   min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-background {
+  margin-top: 40px;
+  padding: 50px 0;
+  width: 950px;
+  background-color: #dddddd;
+  min-height: 80vh;
+
 }
 
 header {
-  margin: auto;
+  margin: 0px auto 40px auto;
   font-size: 4rem;
   font-weight: bold;
   text-align: center;
@@ -43,7 +54,7 @@ button:focus {
   outline-color: #007aff;
 }
 
-button {
+.save-button {
   margin-top: 20px;
   width: fit-content;
   background-color: white;
@@ -85,7 +96,7 @@ button:hover {
 .table {
   display: flex;
   flex-direction: column;
-  width: 850px;
+  width: 100%;
   margin-top: 40px;
   min-height: 52vh;
   font-size: 1.1rem;
@@ -122,6 +133,26 @@ i {
 
 .fa-trash:hover {
   color: #ff3b30;
+}
+
+.addButton{
+  margin: 25px auto;
+  padding: 5px 10px;
+  width: fit-content;
+  background-color: white;
+  border: solid 1px #dddddd;
+  font-size: 1.1rem;
+  /*height: 30px;*/
+  border-radius: 4px;
+}
+
+.addButton:hover{
+  background-color: rgb(48, 209, 88);
+  color: white;
+}
+
+.addButton:hover i{
+  color: white;
 }
 
 a {

@@ -2,7 +2,9 @@
 
 include_once "dbhandler.php";
 
-$id = $_GET['id'];
+if (isset($_GET['id'])) {
+    $id = $_GET['id'];
+}
 
 if (isset($id)) {
     $qry = mysqli_query($conn, "select * from adressbuch where id='$id'");
@@ -14,13 +16,14 @@ if (isset($_POST['update'])) /*BESTEHENDEN EINTRAG BEARBEITEN*/ {
     $newData = getData($conn);
 
     /*Updating data in table using prepared statements*/
-    $edit = "UPDATE adressbuch SET anrede=?, vorname=?, nachname=?, adresse=?, stadt=?, telefon=? WHERE id=?";
+    $edit = "UPDATE adressbuch SET anrede=?, vorname=?, nachname=?, adresse=?, stadt=?, telefon=?, email=? WHERE id=?";
 
     $stmt = mysqli_stmt_init($conn);
     if (!mysqli_stmt_prepare($stmt, $edit)) {
         echo "SQL error";
     } else {
-        mysqli_stmt_bind_param($stmt, "isssssi", $newData['anrede'], $newData['vorname'], $newData['nachname'], $newData['adresse'], $newData['stadt'], $newData['telefon'], $id);
+        mysqli_stmt_bind_param($stmt, "issssssi", $newData['anrede'], $newData['vorname'],
+            $newData['nachname'], $newData['adresse'], $newData['stadt'], $newData['telefon'], $newData['email'], $id);
         mysqli_stmt_execute($stmt);
     };
     /*Returning to main page*/
@@ -33,15 +36,15 @@ if (isset($_POST['insert'])) /*NEUEN EINTRAG SPEICHERN*/ {
     $newData = getData($conn);
 
     /*Inserting new data into table using prepared statements*/
-    $sql = "INSERT INTO `adressbuch` (id, anrede, vorname, nachname, adresse, stadt, telefon)
-VALUES (NULL, ?, ?, ?, ?, ?, ?);";
+    $sql = "INSERT INTO `adressbuch` (id, anrede, vorname, nachname, adresse, stadt, telefon, email)
+VALUES (NULL, ?, ?, ?, ?, ?, ?, ?);";
     $stmt = mysqli_stmt_init($conn);
 
     if (!mysqli_stmt_prepare($stmt, $sql)) {
         echo "SQL error";
     } else {
-        mysqli_stmt_bind_param($stmt, "isssss", $newData['anrede'], $newData['vorname'],
-            $newData['nachname'], $newData['adresse'], $newData['stadt'], $newData['telefon']);
+        mysqli_stmt_bind_param($stmt, "issssss", $newData['anrede'], $newData['vorname'],
+            $newData['nachname'], $newData['adresse'], $newData['stadt'], $newData['telefon'], $newData['email']);
         mysqli_stmt_execute($stmt);
     }
 
@@ -57,6 +60,7 @@ function getData($conn)
     $adresse = mysqli_real_escape_string($conn, $_POST['adresse']);
     $stadt = mysqli_real_escape_string($conn, $_POST['stadt']);
     $telefon = mysqli_real_escape_string($conn, $_POST['telefon']);
+    $email = mysqli_real_escape_string($conn, $_POST['email']);
 
 
     return array("anrede" => $anrede,
@@ -64,7 +68,8 @@ function getData($conn)
         "nachname" => $nachname,
         "adresse" => $adresse,
         "stadt" => $stadt,
-        "telefon" => $telefon);
+        "telefon" => $telefon,
+        "email" => $email);
 
 }
 
@@ -86,7 +91,7 @@ function getData($conn)
 </head>
 
 <body>
-<div class="background">
+<div class="form-background">
     <header>
         <?php
         if (isset($data)) {
@@ -137,12 +142,15 @@ function getData($conn)
             <input type="text" name="telefon" value="<?php if (isset($data)) {
                 echo $data['telefon'];
             } ?>" placeholder="Telefon"/>
+            <input type="text" name="email" value="<?php if (isset($data)) {
+                echo $data['email'];
+            } ?>" placeholder="E-Mail"/>
 
             <?php
             if (isset($data)) {
-                echo "<button type=submit name=update value=Update>Speichern</button>";
+                echo "<button class=save-button type=submit name=update value=Update>Speichern</button>";
             } else {
-                echo "<button type=submit name=insert value=Insert>Speichern</button>";
+                echo "<button class=save-button type=submit name=insert value=Insert>Speichern</button>";
             }
             ?>
         </form>

@@ -21,7 +21,9 @@
         <h1>Adressbuch</h1>
     </header>
 
-    <a href=includes/form.php?id=2><button>TESTBUTTON</button></a>
+    <button class="addButton" onclick=location.href='./includes/form.php'><i class="fas fa-plus fa-sm"></i> Neuer
+        Kontakt
+    </button>
 
     <?php
 
@@ -52,6 +54,7 @@
           <th><a href='?order=adresse&&sort=$sort'>Adresse <span class='fas fa-sort'></span></a></th>
           <th><a href='?order=stadt&&sort=$sort'>Stadt <span class='fas fa-sort'></span></a></th>
           <th>Telefon</th>
+          <th>E-Mail</th>
           <th colspan='2'></th>
         </tr>
       </thead>";
@@ -67,6 +70,7 @@
         <td>" . $row['adresse'] . "</td>
         <td>" . $row['stadt'] . "</td>
         <td>" . $row['telefon'] . "</td>
+        <td>" . $row['email'] . "</td>
         <td><a href=includes/form.php?id=" . $row['id'] . "><i class=\"fas fa-pen\"></a></i></td>
         <td><a href=includes/delete.php?id=" . $row['id'] . "><i class=\"fas fa-trash\"></a></i></td>
       </tr>";
