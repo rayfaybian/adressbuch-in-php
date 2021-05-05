@@ -35,27 +35,26 @@ if (isset($_POST['insert'])) /*NEUEN EINTRAG SPEICHERN*/ {
 
     $newData = getData($conn);
 
+    if (validateMail($newData['email'])) {
 
-        if (validateMail($newData['email'])) {
-
-            /*Inserting new data into table using prepared statements*/
-            $sql = "INSERT INTO `adressbuch` (id, anrede, vorname, nachname, adresse, stadt, telefon, email)
+        /*Inserting new data into table using prepared statements*/
+        $sql = "INSERT INTO `adressbuch` (id, anrede, vorname, nachname, adresse, stadt, telefon, email)
             VALUES (NULL, ?, ?, ?, ?, ?, ?, ?);";
-            $stmt = mysqli_stmt_init($conn);
+        $stmt = mysqli_stmt_init($conn);
 
-            if (!mysqli_stmt_prepare($stmt, $sql)) {
-                echo "SQL error";
-            } else {
-                mysqli_stmt_bind_param($stmt, "issssss", $newData['anrede'], $newData['vorname'],
-                    $newData['nachname'], $newData['adresse'], $newData['stadt'], $newData['telefon'], $newData['email']);
-                mysqli_stmt_execute($stmt);
-            }
-
-            /*Returning to main page*/
-            header("Location: ../index.php");
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            echo "SQL error";
         } else {
-            echo "ERROR";
+            mysqli_stmt_bind_param($stmt, "issssss", $newData['anrede'], $newData['vorname'],
+                $newData['nachname'], $newData['adresse'], $newData['stadt'], $newData['telefon'], $newData['email']);
+            mysqli_stmt_execute($stmt);
         }
+
+        /*Returning to main page*/
+        header("Location: ../index.php");
+    } else {
+        echo "ERROR: EMAIL NOT VALID";
+    }
 
 }
 
@@ -69,7 +68,6 @@ function getData($conn)
     $telefon = mysqli_real_escape_string($conn, $_POST['telefon']);
     $email = mysqli_real_escape_string($conn, $_POST['email']);
 
-
     return array("anrede" => $anrede,
         "vorname" => $vorname,
         "nachname" => $nachname,
@@ -77,15 +75,12 @@ function getData($conn)
         "stadt" => $stadt,
         "telefon" => $telefon,
         "email" => $email);
-
 }
 
 function validateMail($email)
 {
-
     $pattern = "/^[a-zA-Z0-9!#$&_*?^{}~-]+(\.?[a-zA-Z0-9!#$&_*?^{}~-]+)*@+([a-z0-9]+([a-z0-9]*)\.)+[a-zA-Z]+$/i";
     return preg_match($pattern, $email);
-
 }
 
 ?>
@@ -127,10 +122,12 @@ function validateMail($email)
 
                 if ($resultCheck > 0) {
                     if (!isset($data)) {
-                        echo "<option name= 'default' selected disabled hidden>Anrede</option>";
+                        echo "<option value= '0' name='default' selected hidden>Anrede</option>";
                     }
                     while ($row = mysqli_fetch_assoc($result)) {
-                        if ($data['anrede'] == $row['anredeID']) {
+                        if ($row['anredeID'] == '0') {
+                            echo "<option value=" . $row['anredeID'] . "selected hidden>Anrede</option>";
+                        } else if ($data['anrede'] == $row['anredeID']) {
                             echo "<option value=" . $row['anredeID'] . " selected >" . $row['anredeText'] . "</option>";
                         } else {
                             echo "<option value=" . $row['anredeID'] . ">" . $row['anredeText'] . "</option>";
