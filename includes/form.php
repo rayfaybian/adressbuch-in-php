@@ -120,10 +120,7 @@ function validateMail($email)
                 $result = mysqli_query($conn, $sql);
                 $resultCheck = mysqli_num_rows($result);
 
-                if ($resultCheck > 0) {
-                    if (!isset($data)) {
-                        echo "<option value= '0' name='default' selected hidden>Anrede</option>";
-                    }
+                if ($resultCheck > 0)
                     while ($row = mysqli_fetch_assoc($result)) {
                         if ($row['anredeID'] == '0') {
                             echo "<option value=" . $row['anredeID'] . "selected hidden>Anrede</option>";
@@ -132,8 +129,8 @@ function validateMail($email)
                         } else {
                             echo "<option value=" . $row['anredeID'] . ">" . $row['anredeText'] . "</option>";
                         }
+
                     }
-                }
                 ?>
             </select>
 
