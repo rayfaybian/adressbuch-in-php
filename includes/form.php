@@ -2,32 +2,29 @@
 
 include_once "dbhandler.php";
 
-$error_vorname = "";
-$error_nachname = "";
-$error_email = "";
-$error_email_format = "";
+/*VARIABLES FOR REQUIRED INPUT FIELDS*/
+$error_vorname = $error_nachname = $error_email = $error_email_format = "";
+$error_class_vorname = $error_class_nachname = $error_class_email = "";
 
-$error_class_vorname = "";
-$error_class_nachname = "";
-$error_class_email = "";
-
-
+/*GET ID FOR SQL QUERY*/
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
 }
 
+/*FETCH DATA FOR EDITING*/
 if (isset($id)) {
     $qry = mysqli_query($conn, "select * from adressbuch where id='$id'");
     $data = mysqli_fetch_array($qry);
 }
 
-if (isset($_POST['update'])) /*BESTEHENDEN EINTRAG BEARBEITEN*/ {
+/*UPDATE EXISTING ENTRY IN DATABASE*/
+if (isset($_POST['update']))  {
 
     $data = $newData = getNewData($conn);
 
     if (checkRequiredFields($newData)) {
 
-        /*Updating data in table using prepared statements*/
+        /*UPDATING DATA IN TABLE USING PREPARED STATEMENTS*/
         $edit = "UPDATE adressbuch SET anrede=?, vorname=?, nachname=?, adresse=?, stadt=?, telefon=?, email=? WHERE id=?";
 
         $stmt = mysqli_stmt_init($conn);
@@ -38,19 +35,19 @@ if (isset($_POST['update'])) /*BESTEHENDEN EINTRAG BEARBEITEN*/ {
                 $newData['nachname'], $newData['adresse'], $newData['stadt'], $newData['telefon'], $newData['email'], $id);
             mysqli_stmt_execute($stmt);
         };
-        /*Returning to main page*/
+        /*RETURNING TO MAIN PAGE*/
         header("Location: ../index.php");
     }
 }
 
-
-if (isset($_POST['insert'])) /*NEUEN EINTRAG SPEICHERN*/ {
+/*INSERT NEW ENTRY INTO DATABASE*/
+if (isset($_POST['insert']))  {
 
     $newData = getNewData($conn);
 
     if (checkRequiredFields($newData)) {
 
-        /*Inserting new data into table using prepared statements*/
+        /*INSERTING NEW DATA INTO TABLE USING PREPARED STATEMENTS*/
         $sql = "INSERT INTO `adressbuch` (id, anrede, vorname, nachname, adresse, stadt, telefon, email)
             VALUES (NULL, ?, ?, ?, ?, ?, ?, ?);";
         $stmt = mysqli_stmt_init($conn);
@@ -63,12 +60,13 @@ if (isset($_POST['insert'])) /*NEUEN EINTRAG SPEICHERN*/ {
             mysqli_stmt_execute($stmt);
         }
 
-        /*Returning to main page*/
+        /*RETURNING TO MAIN PAGE*/
         header("Location: ../index.php");
     }
 
 }
 
+/*CREATING DATA ARRAY WITH NEW/UPDATED VALUES*/
 function getNewData($conn)
 {
     $anrede = mysqli_real_escape_string($conn, $_POST['anrede']);
@@ -88,6 +86,7 @@ function getNewData($conn)
         "email" => $email);
 }
 
+/*CHECK IF REQUIRED FIELDS CONTAIN DATA*/
 function checkRequiredFields($newData)
 {
     global $error_vorname;
@@ -137,6 +136,7 @@ function checkRequiredFields($newData)
     }
 }
 
+/*CHECK IF EMAIL ADRESS MATCHES THE REQUIRED REGEX PATTERN*/
 function validateMail($email)
 {
     $pattern = "/^[a-zA-Z0-9!#$&_*?^{}~-]+(\.?[a-zA-Z0-9!#$&_*?^{}~-]+)*@+([a-z0-9]+([a-z0-9]*)\.)+[a-zA-Z]+$/i";
