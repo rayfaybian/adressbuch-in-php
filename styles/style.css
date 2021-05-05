@@ -46,6 +46,16 @@ header {
   border-radius: 4px;
 }
 
+.error-label{
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: normal;
+  margin-top: 5px;
+  color: #ff3b30;
+}
+
 input:focus,
 select:focus,
 button:focus {
@@ -166,4 +176,8 @@ a:visited {
 
 a:hover {
   color: #007aff;
+}
+
+.input-error{
+  background-color: #ff3b30;
 }

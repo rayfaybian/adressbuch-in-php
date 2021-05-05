@@ -2,6 +2,16 @@
 
 include_once "dbhandler.php";
 
+$error_vorname = "";
+$error_nachname = "";
+$error_email = "";
+$error_email_format = "";
+
+$error_class_vorname = "";
+$error_class_nachname = "";
+$error_class_email = "";
+
+
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
 }
@@ -13,29 +23,32 @@ if (isset($id)) {
 
 if (isset($_POST['update'])) /*BESTEHENDEN EINTRAG BEARBEITEN*/ {
 
-    $newData = getData($conn);
+    $data = $newData = getNewData($conn);
 
-    /*Updating data in table using prepared statements*/
-    $edit = "UPDATE adressbuch SET anrede=?, vorname=?, nachname=?, adresse=?, stadt=?, telefon=?, email=? WHERE id=?";
+    if (checkRequiredFields($newData)) {
 
-    $stmt = mysqli_stmt_init($conn);
-    if (!mysqli_stmt_prepare($stmt, $edit)) {
-        echo "SQL error";
-    } else {
-        mysqli_stmt_bind_param($stmt, "issssssi", $newData['anrede'], $newData['vorname'],
-            $newData['nachname'], $newData['adresse'], $newData['stadt'], $newData['telefon'], $newData['email'], $id);
-        mysqli_stmt_execute($stmt);
-    };
-    /*Returning to main page*/
-    header("Location: ../index.php");
+        /*Updating data in table using prepared statements*/
+        $edit = "UPDATE adressbuch SET anrede=?, vorname=?, nachname=?, adresse=?, stadt=?, telefon=?, email=? WHERE id=?";
+
+        $stmt = mysqli_stmt_init($conn);
+        if (!mysqli_stmt_prepare($stmt, $edit)) {
+            echo "SQL error";
+        } else {
+            mysqli_stmt_bind_param($stmt, "issssssi", $newData['anrede'], $newData['vorname'],
+                $newData['nachname'], $newData['adresse'], $newData['stadt'], $newData['telefon'], $newData['email'], $id);
+            mysqli_stmt_execute($stmt);
+        };
+        /*Returning to main page*/
+        header("Location: ../index.php");
+    }
 }
 
 
 if (isset($_POST['insert'])) /*NEUEN EINTRAG SPEICHERN*/ {
 
-    $newData = getData($conn);
+    $newData = getNewData($conn);
 
-    if (validateMail($newData['email'])) {
+    if (checkRequiredFields($newData)) {
 
         /*Inserting new data into table using prepared statements*/
         $sql = "INSERT INTO `adressbuch` (id, anrede, vorname, nachname, adresse, stadt, telefon, email)
@@ -52,13 +65,11 @@ if (isset($_POST['insert'])) /*NEUEN EINTRAG SPEICHERN*/ {
 
         /*Returning to main page*/
         header("Location: ../index.php");
-    } else {
-        echo "ERROR: EMAIL NOT VALID";
     }
 
 }
 
-function getData($conn)
+function getNewData($conn)
 {
     $anrede = mysqli_real_escape_string($conn, $_POST['anrede']);
     $vorname = mysqli_real_escape_string($conn, $_POST['vorname']);
@@ -75,6 +86,55 @@ function getData($conn)
         "stadt" => $stadt,
         "telefon" => $telefon,
         "email" => $email);
+}
+
+function checkRequiredFields($newData)
+{
+    global $error_vorname;
+    global $error_nachname;
+    global $error_email;
+    global $error_email_format;
+
+    global $error_class_vorname;
+    global $error_class_nachname;
+    global $error_class_email;
+
+    if (empty($newData['vorname'])) {
+        $error_vorname = "Bitte Vorname angeben!";
+        $error_class_vorname = "input-error";
+    } else {
+        $error_vorname = "";
+        $error_class_vorname = "";
+    }
+
+    if (empty($newData['nachname'])) {
+        $error_nachname = "Bitte Nachname angeben!";
+        $error_class_nachname = "input-error";
+    } else {
+        $error_nachname = "";
+        $error_class_nachname = "";
+    }
+
+    if (empty($newData['email'])) {
+        $error_email = "Bitte Email angeben!";
+        $error_class_email = "input-error";
+    } else {
+        $error_email = "";
+        $error_class_email = "";
+    }
+
+    if (!empty($newData['email']))
+        if (!validateMail($newData['email'])) {
+            $error_email_format = "Ungültige Email Adresse!";
+            $error_class_email = "input-error";
+        } else {
+            $error_email_format = "";
+            $error_class_email = "";
+        }
+
+    if (empty($error_vorname) && empty($error_nachname) && empty($error_email) && empty($error_email_format)) {
+        return true;
+    }
 }
 
 function validateMail($email)
@@ -123,7 +183,7 @@ function validateMail($email)
                 if ($resultCheck > 0)
                     while ($row = mysqli_fetch_assoc($result)) {
                         if ($row['anredeID'] == '0') {
-                            echo "<option value=" . $row['anredeID'] . "selected hidden>Anrede</option>";
+                            echo "<option value=" . $row['anredeID'] . " selected hidden>Anrede</option>";
                         } else if ($data['anrede'] == $row['anredeID']) {
                             echo "<option value=" . $row['anredeID'] . " selected >" . $row['anredeText'] . "</option>";
                         } else {
@@ -135,25 +195,45 @@ function validateMail($email)
             </select>
 
 
-            <input type="text" name="vorname" value="<?php if (isset($data)) {
-                echo
-                $data['vorname'];
+            <input type="text" class="<?php echo $error_class_vorname ?>" name="vorname"  value="<?php if (isset($data)) {
+                echo $data['vorname'];
+            } else if (isset($newData)) {
+                echo $newData['vorname'];
             } ?>" placeholder="Vorname"/>
-            <input type="text" name="nachname" value="<?php if (isset($data)) {
-                echo $data['nachname'];
-            } ?>" placeholder="Nachname"/>
+
+            <input type="text" name="nachname"
+                   class="<?php echo $error_class_nachname ?>" value="<?php if (isset($data)) {
+                       echo $data['nachname'];
+                   } else if (isset($newData)) {
+                       echo $newData['nachname'];
+                   } ?>" placeholder="Nachname"/>
             <input type="text" name="adresse" value="<?php if (isset($data)) {
                 echo $data['adresse'];
+            } else if (isset($newData)) {
+                echo $newData['adresse'];
             } ?>" placeholder="Straße"/>
             <input type="text" name="stadt" value="<?php if (isset($data)) {
                 echo $data['stadt'];
+            } else if (isset($newData)) {
+                echo $newData['stadt'];
             } ?>" placeholder="Stadt"/>
             <input type="text" name="telefon" value="<?php if (isset($data)) {
                 echo $data['telefon'];
+            } else if (isset($newData)) {
+                echo $newData['telefon'];
             } ?>" placeholder="Telefon"/>
-            <input type="text" name="email" value="<?php if (isset($data)) {
+
+            <input type="text" name="email" class="<?php echo $error_class_email ?>" value="<?php if (isset($data)) {
                 echo $data['email'];
+            } else if (isset($newData)) {
+                echo $newData['email'];
             } ?>" placeholder="E-Mail"/>
+            <div class="error-label">
+                <label><?php echo $error_vorname ?></label>
+                <label><?php echo $error_nachname ?></label>
+                <label><?php echo $error_email ?></label>
+                <label><?php echo $error_email_format ?></label>
+            </div>
 
             <?php
             if (isset($data)) {
