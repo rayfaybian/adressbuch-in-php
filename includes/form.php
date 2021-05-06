@@ -183,9 +183,8 @@ function checkUniqueMail($conn, $email)
         if (isset($data)) {
             echo "<h1>Kontakt bearbeiten</h1>";
         } else {
-            echo "<h1>Neuer Kontakt</h1>
-    </header>";
-        } ?>
+            echo "<h1>Neuer Kontakt</h1>";}?>
+    </header>
 
         <form class="input-area" method="POST">
 
@@ -205,11 +204,9 @@ function checkUniqueMail($conn, $email)
                         } else {
                             echo "<option value=" . $row['anredeID'] . ">" . $row['anredeText'] . "</option>";
                         }
-
                     }
                 ?>
             </select>
-
 
             <input type="text" class="<?php echo $error_class_vorname ?>" name="vorname"
                    value="<?php if (isset($data)) {
@@ -259,5 +256,6 @@ function checkUniqueMail($conn, $email)
             }
             ?>
         </form>
+        <button class="abort-button" onclick=location.href='../index.php'>Abbrechen</button>
 </div>
 </body>
