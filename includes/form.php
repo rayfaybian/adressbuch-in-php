@@ -3,7 +3,7 @@
 include_once "dbhandler.php";
 
 /*VARIABLES FOR REQUIRED INPUT FIELDS*/
-$error_vorname = $error_nachname = $error_email = $error_email_format = "";
+$error_vorname = $error_nachname = $error_email = "";
 $error_class_vorname = $error_class_nachname = $error_class_email = "";
 
 /*GET ID FOR SQL QUERY*/
@@ -18,11 +18,11 @@ if (isset($id)) {
 }
 
 /*UPDATE EXISTING ENTRY IN DATABASE*/
-if (isset($_POST['update']))  {
+if (isset($_POST['update'])) {
 
     $data = $newData = getNewData($conn);
 
-    if (checkRequiredFields($newData)) {
+    if (checkRequiredFields($conn, $newData)) {
 
         /*UPDATING DATA IN TABLE USING PREPARED STATEMENTS*/
         $edit = "UPDATE adressbuch SET anrede=?, vorname=?, nachname=?, adresse=?, stadt=?, telefon=?, email=? WHERE id=?";
@@ -41,11 +41,11 @@ if (isset($_POST['update']))  {
 }
 
 /*INSERT NEW ENTRY INTO DATABASE*/
-if (isset($_POST['insert']))  {
+if (isset($_POST['insert'])) {
 
     $newData = getNewData($conn);
 
-    if (checkRequiredFields($newData)) {
+    if (checkRequiredFields($conn, $newData)) {
 
         /*INSERTING NEW DATA INTO TABLE USING PREPARED STATEMENTS*/
         $sql = "INSERT INTO `adressbuch` (id, anrede, vorname, nachname, adresse, stadt, telefon, email)
@@ -87,12 +87,11 @@ function getNewData($conn)
 }
 
 /*CHECK IF REQUIRED FIELDS CONTAIN DATA*/
-function checkRequiredFields($newData)
+function checkRequiredFields($conn, $newData)
 {
     global $error_vorname;
     global $error_nachname;
     global $error_email;
-    global $error_email_format;
 
     global $error_class_vorname;
     global $error_class_nachname;
@@ -115,23 +114,20 @@ function checkRequiredFields($newData)
     }
 
     if (empty($newData['email'])) {
-        $error_email = "Bitte Email angeben!";
+        $error_email = "Bitte Email Adresse angeben!";
+        $error_class_email = "input-error";
+    } else if (!validateMail($newData['email'])) {
+        $error_email = "Ungültige Email Adresse!";
+        $error_class_email = "input-error";
+    } else if (!checkUniqueMail($conn, $newData['email'])) {
+        $error_email = "Email Adresse wird bereits verwendet!";
         $error_class_email = "input-error";
     } else {
         $error_email = "";
         $error_class_email = "";
     }
 
-    if (!empty($newData['email']))
-        if (!validateMail($newData['email'])) {
-            $error_email_format = "Ungültige Email Adresse!";
-            $error_class_email = "input-error";
-        } else {
-            $error_email_format = "";
-            $error_class_email = "";
-        }
-
-    if (empty($error_vorname) && empty($error_nachname) && empty($error_email) && empty($error_email_format)) {
+    if (empty($error_vorname) && empty($error_nachname) && empty($error_email)) {
         return true;
     }
 }
@@ -141,6 +137,19 @@ function validateMail($email)
 {
     $pattern = "/^[a-zA-Z0-9!#$&_*?^{}~-]+(\.?[a-zA-Z0-9!#$&_*?^{}~-]+)*@+([a-z0-9]+([a-z0-9]*)\.)+[a-zA-Z]+$/i";
     return preg_match($pattern, $email);
+}
+
+/*CHECK IF MAIL ALREADY EXISTS*/
+function checkUniqueMail($conn, $email)
+{
+    $qry = mysqli_query($conn, "select * from adressbuch where email='$email'");
+    $result = mysqli_fetch_array($qry);
+
+    if ($result > 0) {
+        return false;
+    } else {
+        return true;
+    }
 }
 
 ?>
@@ -195,18 +204,19 @@ function validateMail($email)
             </select>
 
 
-            <input type="text" class="<?php echo $error_class_vorname ?>" name="vorname"  value="<?php if (isset($data)) {
-                echo $data['vorname'];
-            } else if (isset($newData)) {
-                echo $newData['vorname'];
-            } ?>" placeholder="Vorname"/>
+            <input type="text" class="<?php echo $error_class_vorname ?>" name="vorname"
+                   value="<?php if (isset($data)) {
+                       echo $data['vorname'];
+                   } else if (isset($newData)) {
+                       echo $newData['vorname'];
+                   } ?>" placeholder="Vorname"/>
 
             <input type="text" name="nachname"
                    class="<?php echo $error_class_nachname ?>" value="<?php if (isset($data)) {
-                       echo $data['nachname'];
-                   } else if (isset($newData)) {
-                       echo $newData['nachname'];
-                   } ?>" placeholder="Nachname"/>
+                echo $data['nachname'];
+            } else if (isset($newData)) {
+                echo $newData['nachname'];
+            } ?>" placeholder="Nachname"/>
             <input type="text" name="adresse" value="<?php if (isset($data)) {
                 echo $data['adresse'];
             } else if (isset($newData)) {
@@ -232,7 +242,6 @@ function validateMail($email)
                 <label><?php echo $error_vorname ?></label>
                 <label><?php echo $error_nachname ?></label>
                 <label><?php echo $error_email ?></label>
-                <label><?php echo $error_email_format ?></label>
             </div>
 
             <?php
