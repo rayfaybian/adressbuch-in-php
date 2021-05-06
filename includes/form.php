@@ -142,8 +142,15 @@ function validateMail($email)
 /*CHECK IF MAIL ALREADY EXISTS*/
 function checkUniqueMail($conn, $email)
 {
-    $qry = mysqli_query($conn, "select * from adressbuch where email='$email'");
-    $result = mysqli_fetch_array($qry);
+    global $id;
+
+    if (isset($id)) {/*QUERY FOR UPDATE*/
+        $qry = mysqli_query($conn, "select * from adressbuch where email='$email' AND NOT id='$id'");
+        $result = mysqli_fetch_array($qry);
+    } else {/*QUERY FOR INSERT*/
+        $qry = mysqli_query($conn, "select * from adressbuch where email='$email'");
+        $result = mysqli_fetch_array($qry);
+    }
 
     if ($result > 0) {
         return false;
