@@ -19,3 +19,6 @@ if (!mysqli_set_charset($conn, "utf8mb4")) {
     exit();
 }
 //echo mysqli_character_set_name($conn);
+
+
+//github test
