@@ -1,9 +1,11 @@
 <?php
 
-$dbServername = "localhost";
-$dbUsername = "root";
-$dbPassword = "";
-$dbName = "adressbuch";
+include_once './config/dbConfig.php';
+
+$dbServername = DBHOST;
+$dbUsername = DBUSER;
+$dbPassword = DBPWD;
+$dbName = DBNAME;
 
 $conn = mysqli_connect($dbServername, $dbUsername, $dbPassword, $dbName);
 
