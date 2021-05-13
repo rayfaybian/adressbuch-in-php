@@ -21,7 +21,7 @@
         <h1>Adressbuch</h1>
     </header>
 
-    <button class="addButton" onclick=location.href='./includes/form.php'><i class="fas fa-plus fa-sm"></i> Neuer
+    <button class="addButton" onclick=location.href='form.php'><i class="fas fa-plus fa-sm"></i> Neuer
         Kontakt
     </button>
 
@@ -71,7 +71,7 @@
         <td>" . $row['stadt'] . "</td>
         <td>" . $row['telefon'] . "</td>
         <td>" . $row['email'] . "</td>
-        <td><a href=includes/form.php?id=" . $row['id'] . "><i class=\"fas fa-pen\"></a></i></td>
+        <td><a href=form.php?id=" . $row['id'] . "><i class=\"fas fa-pen\"></a></i></td>
         <td><a href=includes/delete.php?id=" . $row['id'] . "><i class=\"fas fa-trash\"></a></i></td>
       </tr>";
         }

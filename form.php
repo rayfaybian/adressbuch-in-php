@@ -1,6 +1,6 @@
 <?php
 
-include_once "dbhandler.php";
+include_once "./includes/dbhandler.php";
 
 /*VARIABLES FOR REQUIRED INPUT FIELDS*/
 $error_vorname = $error_nachname = $error_email = "";
@@ -32,7 +32,7 @@ if (isset($_POST['update'])) {
             mysqli_stmt_execute($stmt);
         };
         /*RETURNING TO MAIN PAGE*/
-        header("Location: ../index.php");
+        header("Location: index.php");
     }
 }
 
@@ -57,7 +57,7 @@ if (isset($_POST['insert'])) {
         }
 
         /*RETURNING TO MAIN PAGE*/
-        header("Location: ../index.php");
+        header("Location: index.php");
     }
 
 }
@@ -164,8 +164,8 @@ function checkUniqueMail($conn, $email)
     <meta charset="UTF-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <link rel="stylesheet" href="../styles/reset.css">
-    <link rel="stylesheet" href="../styles/style.css"/>
+    <link rel="stylesheet" href="styles/reset.css">
+    <link rel="stylesheet" href="styles/style.css"/>
     <title>Kontakt Update</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css"
           integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog=="
@@ -253,6 +253,6 @@ function checkUniqueMail($conn, $email)
         }
         ?>
     </form>
-    <button class="abort-button" onclick=location.href='../index.php'>Abbrechen</button>
+    <button class="abort-button" onclick=location.href='index.php'>Abbrechen</button>
 </div>
 </body>
