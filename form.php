@@ -23,10 +23,15 @@ if (isset($_POST['save'])) {
     }
 
     $conn = dbConnect();
-    $data = $newData = getNewData($conn);
+    $data = $newData = getNewData();
 
-    /*INSERT NEW RECORD WITH ID 0*/
+    /*VALIDATE REQUIRED FIELDS*/
     if (checkRequiredFields($conn, $newData)) {
+
+        /*ESCAPE SPECIAL CHARACTERS AFTER VALIDATION*/
+        $saveData = escapeString($conn, $newData);
+
+        /*INSERT NEW RECORD WITH ID 0*/
         if ($id == 0) {
             $sql = "INSERT INTO `adressbuch` (id)
             VALUES (?);";
@@ -52,8 +57,8 @@ if (isset($_POST['save'])) {
         if (!mysqli_stmt_prepare($stmt, $sql)) {
             echo "SQL error";
         } else {
-            mysqli_stmt_bind_param($stmt, "issssssi", $newData['anrede'], $newData['vorname'],
-                $newData['nachname'], $newData['adresse'], $newData['stadt'], $newData['telefon'], $newData['email'],
+            mysqli_stmt_bind_param($stmt, "issssssi", $saveData['anrede'], $saveData['vorname'],
+                $saveData['nachname'], $saveData['adresse'], $saveData['stadt'], $saveData['telefon'], $saveData['email'],
                 $id);
             mysqli_stmt_execute($stmt);
         };
@@ -64,15 +69,26 @@ if (isset($_POST['save'])) {
 }
 
 /*CREATING DATA ARRAY WITH NEW/UPDATED VALUES*/
-function getNewData($conn)
+function getNewData()
 {
-    $anrede = mysqli_real_escape_string($conn, $_POST['anrede']);
-    $vorname = mysqli_real_escape_string($conn, $_POST['vorname']);
-    $nachname = mysqli_real_escape_string($conn, $_POST['nachname']);
-    $adresse = mysqli_real_escape_string($conn, $_POST['adresse']);
-    $stadt = mysqli_real_escape_string($conn, $_POST['stadt']);
-    $telefon = mysqli_real_escape_string($conn, $_POST['telefon']);
-    $email = mysqli_real_escape_string($conn, $_POST['email']);
+    return array("anrede" => $_POST['anrede'],
+        "vorname" => $_POST['vorname'],
+        "nachname" => $_POST['nachname'],
+        "adresse" => $_POST['adresse'],
+        "stadt" => $_POST['stadt'],
+        "telefon" => $_POST['telefon'],
+        "email" => $_POST['email']);
+}
+
+function escapeString($conn, $data){
+
+    $anrede = mysqli_real_escape_string($conn, $data['anrede']);
+    $vorname = mysqli_real_escape_string($conn, $data['vorname']);
+    $nachname = mysqli_real_escape_string($conn, $data['nachname']);
+    $adresse = mysqli_real_escape_string($conn, $data['adresse']);
+    $stadt = mysqli_real_escape_string($conn, $data['stadt']);
+    $telefon = mysqli_real_escape_string($conn, $data['telefon']);
+    $email = mysqli_real_escape_string($conn, $data['email']);
 
     return array("anrede" => $anrede,
         "vorname" => $vorname,
