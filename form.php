@@ -1,6 +1,9 @@
 <?php
 
 include_once "./includes/dbHandler.php";
+include_once "./includes/validator.php";
+
+$validator = new validator();
 
 /*VARIABLES FOR REQUIRED INPUT FIELDS*/
 $error_vorname = $error_nachname = $error_email = "";
@@ -26,7 +29,7 @@ if (isset($_POST['save'])) {
     $data = $newData = getNewData();
 
     /*VALIDATE REQUIRED FIELDS*/
-    if (checkRequiredFields($conn, $newData)) {
+    if (checkRequiredFields($conn, $newData, $validator, $id)) {
 
         /*ESCAPE SPECIAL CHARACTERS AFTER VALIDATION*/
         $saveData = escapeString($conn, $newData);
@@ -80,7 +83,8 @@ function getNewData()
         "email" => $_POST['email']);
 }
 
-function escapeString($conn, $data){
+function escapeString($conn, $data)
+{
 
     $anrede = mysqli_real_escape_string($conn, $data['anrede']);
     $vorname = mysqli_real_escape_string($conn, $data['vorname']);
@@ -100,47 +104,36 @@ function escapeString($conn, $data){
 }
 
 /*CHECK IF REQUIRED FIELDS CONTAIN DATA*/
-function checkRequiredFields($conn, $newData)
+function checkRequiredFields($conn, $data, $validator, $id)
 {
-    global $error_vorname;
-    global $error_nachname;
-    global $error_email;
-
-    global $error_class_vorname;
-    global $error_class_nachname;
-    global $error_class_email;
-
-    if (empty($newData['vorname'])) {
-        $error_vorname = "Bitte Vorname angeben!";
-        $error_class_vorname = "input-error";
+    if (empty($data['vorname'])) {
+        $validator->setErrorVorname("Bitte Vorname angeben!");
+        $validator->setErrorClassVorname();
     } else {
-        $error_vorname = "";
-        $error_class_vorname = "";
+        $validator->validateVorname();
     }
 
-    if (empty($newData['nachname'])) {
-        $error_nachname = "Bitte Nachname angeben!";
-        $error_class_nachname = "input-error";
+    if (empty($data['nachname'])) {
+        $validator->setErrorNachname("Bitte Nachname angeben!");
+        $validator->setErrorClassNachname();
     } else {
-        $error_nachname = "";
-        $error_class_nachname = "";
+        $validator->validateNachname();
     }
 
-    if (empty($newData['email'])) {
-        $error_email = "Bitte Email Adresse angeben!";
-        $error_class_email = "input-error";
-    } else if (!validateMail($newData['email'])) {
-        $error_email = "Ungültige Email Adresse!";
-        $error_class_email = "input-error";
-    } else if (!checkUniqueMail($conn, $newData['email'])) {
-        $error_email = "Email Adresse wird bereits verwendet!";
-        $error_class_email = "input-error";
+    if (empty($data['email'])) {
+        $validator->setErrorEmail("Bitte Email Adresse angeben!");
+        $validator->setErrorClassEmail();
+    } else if (!validateMail($data['email'])) {
+        $validator->setErrorEmail("Ungültige Email Adresse!");
+        $validator->setErrorClassEmail();
+    } else if (!checkUniqueMail($conn, $data['email'], $id)) {
+        $validator->setErrorEmail("Email Adresse wird bereits verwendet!");
+        $validator->setErrorClassEmail();
     } else {
-        $error_email = "";
-        $error_class_email = "";
+        $validator->validateEmail();
     }
 
-    if (empty($error_vorname) && empty($error_nachname) && empty($error_email)) {
+    if ($validator->validateInput()) {
         return true;
     }
 }
@@ -153,21 +146,12 @@ function validateMail($email)
 }
 
 /*CHECK IF MAIL ALREADY EXISTS*/
-function checkUniqueMail($conn, $email)
+function checkUniqueMail($conn, $email, $id)
 {
-    global $id;
+    $qry = mysqli_query($conn, "select * from adressbuch where email='$email' AND NOT id='$id'");
+    $result = mysqli_fetch_array($qry);
 
-    if (isset($id)) {/*QUERY FOR UPDATE*/
-        $qry = mysqli_query($conn, "select * from adressbuch where email='$email' AND NOT id='$id'");
-        $result = mysqli_fetch_array($qry);
-    } else {/*QUERY FOR INSERT*/
-        $qry = mysqli_query($conn, "select * from adressbuch where email='$email'");
-        $result = mysqli_fetch_array($qry);
-    }
-
-    if ($result > 0) {
-        return false;
-    } else {
+    if ($result == 0) {
         return true;
     }
 }
@@ -220,7 +204,7 @@ function checkUniqueMail($conn, $email)
             ?>
         </select>
 
-        <input type="text" class="<?php echo $error_class_vorname ?>" name="vorname"
+        <input type="text" class="<?php echo $validator->getErrorClassVorname() ?>" name="vorname"
                value="<?php if (isset($data)) {
                    echo $data['vorname'];
                } else if (isset($newData)) {
@@ -228,7 +212,7 @@ function checkUniqueMail($conn, $email)
                } ?>" placeholder="Vorname"/>
 
         <input type="text" name="nachname"
-               class="<?php echo $error_class_nachname ?>" value="<?php if (isset($data)) {
+               class="<?php echo $validator->getErrorClassNachname() ?>" value="<?php if (isset($data)) {
             echo $data['nachname'];
         } else if (isset($newData)) {
             echo $newData['nachname'];
@@ -249,15 +233,16 @@ function checkUniqueMail($conn, $email)
             echo $newData['telefon'];
         } ?>" placeholder="Telefon"/>
 
-        <input type="text" name="email" class="<?php echo $error_class_email ?>" value="<?php if (isset($data)) {
-            echo $data['email'];
-        } else if (isset($newData)) {
-            echo $newData['email'];
-        } ?>" placeholder="E-Mail"/>
+        <input type="text" name="email" class="<?php echo $validator->getErrorClassEmail() ?>"
+               value="<?php if (isset($data)) {
+                   echo $data['email'];
+               } else if (isset($newData)) {
+                   echo $newData['email'];
+               } ?>" placeholder="E-Mail"/>
         <div class="error-label">
-            <label><?php echo $error_vorname ?></label>
-            <label><?php echo $error_nachname ?></label>
-            <label><?php echo $error_email ?></label>
+            <label><?php echo $validator->getErrorVorname() ?></label>
+            <label><?php echo $validator->getErrorNachname() ?></label>
+            <label><?php echo $validator->getErrorEmail() ?></label>
         </div>
 
         <?php
