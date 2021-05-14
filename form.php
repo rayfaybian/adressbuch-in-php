@@ -13,50 +13,50 @@ if (isset($_GET['id'])) {
     $data = mysqli_fetch_array($qry);
 }
 
-/*UPDATE EXISTING ENTRY IN DATABASE*/
-if (isset($_POST['update'])) {
+/*INSERT & UPDATE DB*/
+if (isset($_POST['save'])) {
+
+    if (isset($_GET['id'])) {
+        $id = (int)$_GET['id'];
+    } else {
+        $id = 0;
+    }
 
     $conn = dbConnect();
     $data = $newData = getNewData($conn);
 
-    if (checkRequiredFields(dbConnect(), $newData)) {
-
-        /*UPDATING DATA IN TABLE USING PREPARED STATEMENTS*/
-        $edit = "UPDATE adressbuch SET anrede=?, vorname=?, nachname=?, adresse=?, stadt=?, telefon=?, email=? WHERE id=?";
-
-        $stmt = mysqli_stmt_init($conn);
-        if (!mysqli_stmt_prepare($stmt, $edit)) {
-            echo "SQL error";
-        } else {
-            mysqli_stmt_bind_param($stmt, "issssssi", $newData['anrede'], $newData['vorname'],
-                $newData['nachname'], $newData['adresse'], $newData['stadt'], $newData['telefon'], $newData['email'], $id);
-            mysqli_stmt_execute($stmt);
-        };
-        /*RETURNING TO MAIN PAGE*/
-        header("Location: index.php");
-    }
-}
-
-/*INSERT NEW ENTRY INTO DATABASE*/
-if (isset($_POST['insert'])) {
-
-    $conn = dbConnect();
-    $newData = getNewData($conn);
-
+    /*INSERT NEW RECORD WITH ID 0*/
     if (checkRequiredFields($conn, $newData)) {
+        if ($id == 0) {
+            $sql = "INSERT INTO `adressbuch` (id)
+            VALUES (?);";
+            $stmt = mysqli_stmt_init($conn);
 
-        /*INSERTING NEW DATA INTO TABLE USING PREPARED STATEMENTS*/
-        $sql = "INSERT INTO `adressbuch` (id, anrede, vorname, nachname, adresse, stadt, telefon, email)
-            VALUES (NULL, ?, ?, ?, ?, ?, ?, ?);";
+            if (!mysqli_stmt_prepare($stmt, $sql)) {
+                echo "SQL error";
+            } else {
+                mysqli_stmt_bind_param($stmt, "i", $id);
+                mysqli_stmt_execute($stmt);
+            }
+            /*SELECT LAST ENTRY*/
+            $sql = "SELECT id FROM adressbuch ORDER BY id DESC LIMIT 1;";
+            $result = mysqli_query($conn, $sql);
+            $id = mysqli_fetch_assoc($result)['id'];
+            echo $id;
+        }
+
+        $sql = "UPDATE adressbuch SET anrede=?, vorname=?, nachname=?, adresse=?, stadt=?, telefon=?, email=?
+                WHERE id=?";
         $stmt = mysqli_stmt_init($conn);
 
         if (!mysqli_stmt_prepare($stmt, $sql)) {
             echo "SQL error";
         } else {
-            mysqli_stmt_bind_param($stmt, "issssss", $newData['anrede'], $newData['vorname'],
-                $newData['nachname'], $newData['adresse'], $newData['stadt'], $newData['telefon'], $newData['email']);
+            mysqli_stmt_bind_param($stmt, "issssssi", $newData['anrede'], $newData['vorname'],
+                $newData['nachname'], $newData['adresse'], $newData['stadt'], $newData['telefon'], $newData['email'],
+                $id);
             mysqli_stmt_execute($stmt);
-        }
+        };
 
         /*RETURNING TO MAIN PAGE*/
         header("Location: index.php");
@@ -245,11 +245,7 @@ function checkUniqueMail($conn, $email)
         </div>
 
         <?php
-        if (isset($data)) {
-            echo "<button class=save-button type=submit name=update value=Update>Speichern</button>";
-        } else {
-            echo "<button class=save-button type=submit name=insert value=Insert>Speichern</button>";
-        }
+        echo "<button class=save-button type=submit name=save value=save>Speichern</button>";
         ?>
     </form>
     <button class="abort-button" onclick=location.href='index.php'>Abbrechen</button>
