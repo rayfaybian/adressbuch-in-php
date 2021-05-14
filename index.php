@@ -32,12 +32,14 @@ if (isset($_GET['id'])) {
 
         <?php
 
-        (isset($_GET['order'])) ? $order = $_GET['order'] : $order = 'vorname';
-        (isset($_GET['sort'])) ? $sort = $_GET['sort'] : $sort = 'ASC';
+        $conn = dbConnect();
+
+        (isset($_GET['order'])) ? $order = mysqli_real_escape_string($conn, $_GET['order']) : $order = 'vorname';
+        (isset($_GET['sort'])) ? $sort = mysqli_real_escape_string($conn, $_GET['sort']) : $sort = 'ASC';
 
 
         $sql = "SELECT * FROM adressbuch LEFT JOIN anrede ON adressbuch.anrede = anrede.anredeID ORDER BY $order $sort";
-        $result = mysqli_query(dbConnect(), $sql);
+        $result = mysqli_query($conn, $sql);
         $resultCheck = mysqli_num_rows($result);
 
         $sort == 'DESC' ? $sort = 'ASC' : $sort = 'DESC';
@@ -79,9 +81,7 @@ if (isset($_GET['id'])) {
         </table>
     </div>
     </div>
-
     </body>
-
     </html>
 
 <?php function deleteEntry($conn, $id)
