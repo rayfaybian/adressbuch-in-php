@@ -1,6 +1,6 @@
 <?php
 
-include_once "./includes/dbhandler.php";
+include_once "./includes/dbHandler.php";
 
 /*VARIABLES FOR REQUIRED INPUT FIELDS*/
 $error_vorname = $error_nachname = $error_email = "";
@@ -9,16 +9,17 @@ $error_class_vorname = $error_class_nachname = $error_class_email = "";
 /*SQL QUERY TO EDIT CONTACT*/
 if (isset($_GET['id'])) {
     $id = (int)$_GET['id'];
-    $qry = mysqli_query($conn, "select * from adressbuch where id='$id'");
+    $qry = mysqli_query(dbConnect(), "select * from adressbuch where id='$id'");
     $data = mysqli_fetch_array($qry);
 }
 
 /*UPDATE EXISTING ENTRY IN DATABASE*/
 if (isset($_POST['update'])) {
 
+    $conn = dbConnect();
     $data = $newData = getNewData($conn);
 
-    if (checkRequiredFields($conn, $newData)) {
+    if (checkRequiredFields(dbConnect(), $newData)) {
 
         /*UPDATING DATA IN TABLE USING PREPARED STATEMENTS*/
         $edit = "UPDATE adressbuch SET anrede=?, vorname=?, nachname=?, adresse=?, stadt=?, telefon=?, email=? WHERE id=?";
@@ -39,6 +40,7 @@ if (isset($_POST['update'])) {
 /*INSERT NEW ENTRY INTO DATABASE*/
 if (isset($_POST['insert'])) {
 
+    $conn = dbConnect();
     $newData = getNewData($conn);
 
     if (checkRequiredFields($conn, $newData)) {
@@ -59,7 +61,6 @@ if (isset($_POST['insert'])) {
         /*RETURNING TO MAIN PAGE*/
         header("Location: index.php");
     }
-
 }
 
 /*CREATING DATA ARRAY WITH NEW/UPDATED VALUES*/
@@ -128,7 +129,7 @@ function checkRequiredFields($conn, $newData)
     }
 }
 
-/*CHECK IF EMAIL ADRESS MATCHES THE REQUIRED REGEX PATTERN*/
+/*CHECK IF EMAIL ADDRESS MATCHES THE REQUIRED REGEX PATTERN*/
 function validateMail($email)
 {
     $pattern = "/^[a-zA-Z0-9!#$&_*?^{}~-]+(\.?[a-zA-Z0-9!#$&_*?^{}~-]+)*@+([a-z0-9]+([a-z0-9]*)\.)+[a-zA-Z]+$/i";
@@ -184,12 +185,10 @@ function checkUniqueMail($conn, $email)
     </header>
 
     <form class="input-area" method="POST">
-
-
         <select name="anrede">
             <?php
             $sql = "SELECT * FROM anrede";
-            $result = mysqli_query($conn, $sql);
+            $result = mysqli_query(dbConnect(), $sql);
             $resultCheck = mysqli_num_rows($result);
 
             if ($resultCheck > 0)

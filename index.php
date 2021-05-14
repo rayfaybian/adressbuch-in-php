@@ -1,8 +1,8 @@
-<?php include_once 'includes/dbhandler.php';
+<?php include_once 'includes/dbHandler.php';
 
 if (isset($_GET['id'])) {
     $id = (int)$_GET['id'];
-    deleteEntry($conn, $id);
+    deleteEntry(dbConnect(), $id);
 }
 ?>
     <!DOCTYPE html>
@@ -35,8 +35,9 @@ if (isset($_GET['id'])) {
         (isset($_GET['order'])) ? $order = $_GET['order'] : $order = 'vorname';
         (isset($_GET['sort'])) ? $sort = $_GET['sort'] : $sort = 'ASC';
 
+
         $sql = "SELECT * FROM adressbuch LEFT JOIN anrede ON adressbuch.anrede = anrede.anredeID ORDER BY $order $sort";
-        $result = mysqli_query($conn, $sql);
+        $result = mysqli_query(dbConnect(), $sql);
         $resultCheck = mysqli_num_rows($result);
 
         $sort == 'DESC' ? $sort = 'ASC' : $sort = 'DESC';
