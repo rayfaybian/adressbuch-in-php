@@ -5,10 +5,6 @@ include_once "./includes/validator.php";
 
 $validator = new validator();
 
-/*VARIABLES FOR REQUIRED INPUT FIELDS*/
-$error_vorname = $error_nachname = $error_email = "";
-$error_class_vorname = $error_class_nachname = $error_class_email = "";
-
 /*SQL QUERY TO EDIT CONTACT*/
 if (isset($_GET['id'])) {
     $id = (int)$_GET['id'];
@@ -60,9 +56,18 @@ if (isset($_POST['save'])) {
         if (!mysqli_stmt_prepare($stmt, $sql)) {
             echo "SQL error";
         } else {
-            mysqli_stmt_bind_param($stmt, "issssssi", $saveData['anrede'], $saveData['vorname'],
-                $saveData['nachname'], $saveData['adresse'], $saveData['stadt'], $saveData['telefon'], $saveData['email'],
-                $id);
+            mysqli_stmt_bind_param(
+                $stmt,
+                "issssssi",
+                $saveData['anrede'],
+                $saveData['vorname'],
+                $saveData['nachname'],
+                $saveData['adresse'],
+                $saveData['stadt'],
+                $saveData['telefon'],
+                $saveData['email'],
+                $id
+            );
             mysqli_stmt_execute($stmt);
         };
 
@@ -74,13 +79,15 @@ if (isset($_POST['save'])) {
 /*CREATING DATA ARRAY WITH NEW/UPDATED VALUES*/
 function getNewData()
 {
-    return array("anrede" => $_POST['anrede'],
+    return array(
+        "anrede" => $_POST['anrede'],
         "vorname" => $_POST['vorname'],
         "nachname" => $_POST['nachname'],
         "adresse" => $_POST['adresse'],
         "stadt" => $_POST['stadt'],
         "telefon" => $_POST['telefon'],
-        "email" => $_POST['email']);
+        "email" => $_POST['email']
+    );
 }
 
 function escapeString($conn, $data)
@@ -94,13 +101,15 @@ function escapeString($conn, $data)
     $telefon = mysqli_real_escape_string($conn, $data['telefon']);
     $email = mysqli_real_escape_string($conn, $data['email']);
 
-    return array("anrede" => $anrede,
+    return array(
+        "anrede" => $anrede,
         "vorname" => $vorname,
         "nachname" => $nachname,
         "adresse" => $adresse,
         "stadt" => $stadt,
         "telefon" => $telefon,
-        "email" => $email);
+        "email" => $email
+    );
 }
 
 /*CHECK IF REQUIRED FIELDS CONTAIN DATA*/
@@ -162,93 +171,88 @@ function checkUniqueMail($conn, $email, $id)
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="styles/reset.css">
-    <link rel="stylesheet" href="styles/style.css"/>
+    <link rel="stylesheet" href="styles/style.css" />
     <title>Kontakt Update</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css"
-          integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog=="
-          crossorigin="anonymous"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
 </head>
 
 <body>
-<div class="form-background">
-    <header>
-        <?php
-        if (isset($data)) {
-            echo "<h1>Kontakt bearbeiten</h1>";
-        } else {
-            echo "<h1>Neuer Kontakt</h1>";
-        } ?>
-    </header>
-
-    <form class="input-area" method="POST">
-        <select name="anrede">
+    <div class="form-background">
+        <header>
             <?php
-            $sql = "SELECT * FROM anrede";
-            $result = mysqli_query(dbConnect(), $sql);
-            $resultCheck = mysqli_num_rows($result);
+            if (isset($data)) {
+                echo "<h1>Kontakt bearbeiten</h1>";
+            } else {
+                echo "<h1>Neuer Kontakt</h1>";
+            } ?>
+        </header>
 
-            if ($resultCheck > 0)
-                while ($row = mysqli_fetch_assoc($result)) {
-                    if ($row['anredeID'] == '0') {
-                        echo "<option value=" . $row['anredeID'] . " selected hidden>Anrede</option>";
-                    } else if ($data['anrede'] == $row['anredeID']) {
-                        echo "<option value=" . $row['anredeID'] . " selected >" . $row['anredeText'] . "</option>";
-                    } else {
-                        echo "<option value=" . $row['anredeID'] . ">" . $row['anredeText'] . "</option>";
+        <form class="input-area" method="POST">
+            <select name="anrede">
+                <?php
+                $sql = "SELECT * FROM anrede";
+                $result = mysqli_query(dbConnect(), $sql);
+                $resultCheck = mysqli_num_rows($result);
+
+                if ($resultCheck > 0)
+                    while ($row = mysqli_fetch_assoc($result)) {
+                        if ($row['anredeID'] == '0') {
+                            echo "<option value=" . $row['anredeID'] . " selected hidden>Anrede</option>";
+                        } else if ($data['anrede'] == $row['anredeID']) {
+                            echo "<option value=" . $row['anredeID'] . " selected >" . $row['anredeText'] . "</option>";
+                        } else {
+                            echo "<option value=" . $row['anredeID'] . ">" . $row['anredeText'] . "</option>";
+                        }
                     }
-                }
+                ?>
+            </select>
+
+            <input type="text" class="<?php echo $validator->getErrorClassVorname() ?>" name="vorname" value="<?php if (isset($data)) {
+                                                                                                                    echo $data['vorname'];
+                                                                                                                } else if (isset($newData)) {
+                                                                                                                    echo $newData['vorname'];
+                                                                                                                } ?>" placeholder="Vorname" />
+
+            <input type="text" name="nachname" class="<?php echo $validator->getErrorClassNachname() ?>" value="<?php if (isset($data)) {
+                                                                                                                    echo $data['nachname'];
+                                                                                                                } else if (isset($newData)) {
+                                                                                                                    echo $newData['nachname'];
+                                                                                                                } ?>" placeholder="Nachname" />
+            <input type="text" name="adresse" value="<?php if (isset($data)) {
+                                                            echo $data['adresse'];
+                                                        } else if (isset($newData)) {
+                                                            echo $newData['adresse'];
+                                                        } ?>" placeholder="Straße" />
+            <input type="text" name="stadt" value="<?php if (isset($data)) {
+                                                        echo $data['stadt'];
+                                                    } else if (isset($newData)) {
+                                                        echo $newData['stadt'];
+                                                    } ?>" placeholder="Stadt" />
+            <input type="text" name="telefon" value="<?php if (isset($data)) {
+                                                            echo $data['telefon'];
+                                                        } else if (isset($newData)) {
+                                                            echo $newData['telefon'];
+                                                        } ?>" placeholder="Telefon" />
+
+            <input type="text" name="email" class="<?php echo $validator->getErrorClassEmail() ?>" value="<?php if (isset($data)) {
+                                                                                                                echo $data['email'];
+                                                                                                            } else if (isset($newData)) {
+                                                                                                                echo $newData['email'];
+                                                                                                            } ?>" placeholder="E-Mail" />
+            <div class="error-label">
+                <label><?php echo $validator->getErrorVorname() ?></label>
+                <label><?php echo $validator->getErrorNachname() ?></label>
+                <label><?php echo $validator->getErrorEmail() ?></label>
+            </div>
+
+            <?php
+            echo "<button class=save-button type=submit name=save value=save>Speichern</button>";
             ?>
-        </select>
-
-        <input type="text" class="<?php echo $validator->getErrorClassVorname() ?>" name="vorname"
-               value="<?php if (isset($data)) {
-                   echo $data['vorname'];
-               } else if (isset($newData)) {
-                   echo $newData['vorname'];
-               } ?>" placeholder="Vorname"/>
-
-        <input type="text" name="nachname"
-               class="<?php echo $validator->getErrorClassNachname() ?>" value="<?php if (isset($data)) {
-            echo $data['nachname'];
-        } else if (isset($newData)) {
-            echo $newData['nachname'];
-        } ?>" placeholder="Nachname"/>
-        <input type="text" name="adresse" value="<?php if (isset($data)) {
-            echo $data['adresse'];
-        } else if (isset($newData)) {
-            echo $newData['adresse'];
-        } ?>" placeholder="Straße"/>
-        <input type="text" name="stadt" value="<?php if (isset($data)) {
-            echo $data['stadt'];
-        } else if (isset($newData)) {
-            echo $newData['stadt'];
-        } ?>" placeholder="Stadt"/>
-        <input type="text" name="telefon" value="<?php if (isset($data)) {
-            echo $data['telefon'];
-        } else if (isset($newData)) {
-            echo $newData['telefon'];
-        } ?>" placeholder="Telefon"/>
-
-        <input type="text" name="email" class="<?php echo $validator->getErrorClassEmail() ?>"
-               value="<?php if (isset($data)) {
-                   echo $data['email'];
-               } else if (isset($newData)) {
-                   echo $newData['email'];
-               } ?>" placeholder="E-Mail"/>
-        <div class="error-label">
-            <label><?php echo $validator->getErrorVorname() ?></label>
-            <label><?php echo $validator->getErrorNachname() ?></label>
-            <label><?php echo $validator->getErrorEmail() ?></label>
-        </div>
-
-        <?php
-        echo "<button class=save-button type=submit name=save value=save>Speichern</button>";
-        ?>
-    </form>
-    <button class="abort-button" onclick=location.href='index.php'>Abbrechen</button>
-</div>
+        </form>
+        <button class="abort-button" onclick=location.href='index.php'>Abbrechen</button>
+    </div>
 </body>
