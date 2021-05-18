@@ -196,13 +196,14 @@ function checkUniqueMail($conn, $email, $id)
                 $sql = "SELECT * FROM anrede";
                 $result = mysqli_query(dbConnect(), $sql);
                 $resultCheck = mysqli_num_rows($result);
+                if ((isset($data['anrede']) &&  ($data['anrede']) == 0) || (!isset($data))) {
+                    echo "<option selected hidden>Anrede</option>";
+                }
 
                 if ($resultCheck > 0)
                     while ($row = mysqli_fetch_assoc($result)) {
-                        if (($data['anrede'] == 0)) {
-                            echo "<option selected hidden>Anrede</option>";
-                        }
-                        if ($data['anrede'] == $row['anredeID']) {
+
+                        if (isset($data['anrede']) && ($data['anrede'] == $row['anredeID'])) {
                             echo "<option value=" . $row['anredeID'] . " selected >" . $row['anredeText'] . "</option>";
                         } else {
                             echo "<option value=" . $row['anredeID'] . ">" . $row['anredeText'] . "</option>";
