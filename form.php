@@ -8,17 +8,17 @@ $validator = new validator();
 /*SQL QUERY TO EDIT CONTACT*/
 if (isset($_GET['id'])) {
     $id = (int)$_GET['id'];
-    $qry = mysqli_query(dbConnect(), "select * from adressbuch where id='$id'");
+    $qry = mysqli_query(dbConnect(), "select * from adressbuch where id=$id");
     $data = mysqli_fetch_array($qry);
 }
 
 /*INSERT & UPDATE DB*/
 if (isset($_POST['save'])) {
 
-    if (isset($_GET['id'])) {
-        $id = (int)$_GET['id'];
-    } else {
-        $id = 0;
+    $id = 0;
+
+    if (array_key_exists("id",$_GET)) {
+        $id = (int)$_GET["id"];
     }
 
     $conn = dbConnect();

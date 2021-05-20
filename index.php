@@ -85,6 +85,6 @@ if (isset($_GET['id'])) {
     </html>
 
 <?php function deleteEntry($conn, $id)
-{
-    mysqli_query($conn, "delete from adressbuch where id = '$id'");
+{   $id = (int) $id;
+    mysqli_query($conn, "delete from adressbuch where id = ". $id);
 } ?>

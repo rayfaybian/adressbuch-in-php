@@ -14,17 +14,25 @@ class validator
     private $nachnameIsValid = false;
     private $emailIsValid = false;
 
-
+    /**
+     * @param $errorMessage
+     */
     public function setErrorVorname($errorMessage)
     {
         $this->error_vorname = $errorMessage;
     }
 
+    /**
+     * @param $errorMessage string
+     */
     public function setErrorNachname($errorMessage)
     {
         $this->error_nachname = $errorMessage;
     }
 
+    /**
+     * @param $errorMessage
+     */
     public function setErrorEmail($errorMessage)
     {
         $this->error_email = $errorMessage;
@@ -90,6 +98,9 @@ class validator
         $this->emailIsValid = true;
     }
 
+    /**
+     * @return bool
+     */
     public function validateInput(){
         if(($this->vornameIsValid) && ($this->nachnameIsValid) && ($this->emailIsValid)){
             return true;
