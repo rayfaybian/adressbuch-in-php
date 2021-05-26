@@ -3,7 +3,7 @@
 include_once "./includes/dbHandler.php";
 include_once "./includes/validator.php";
 
-$validator = new validator();
+$validator = new Validator();
 
 /*SQL QUERY TO EDIT CONTACT*/
 if (isset($_GET['id'])) {
@@ -17,7 +17,7 @@ if (isset($_POST['save'])) {
 
     $id = 0;
 
-    if (array_key_exists("id",$_GET)) {
+    if (array_key_exists("id", $_GET)) {
         $id = (int)$_GET["id"];
     }
 

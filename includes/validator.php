@@ -1,6 +1,6 @@
 <?php
 
-class validator
+class Validator
 {
     private $error_vorname;
     private $error_nachname;
@@ -101,10 +101,10 @@ class validator
     /**
      * @return bool
      */
-    public function validateInput(){
-        if(($this->vornameIsValid) && ($this->nachnameIsValid) && ($this->emailIsValid)){
+    public function validateInput()
+    {
+        if (($this->vornameIsValid) && ($this->nachnameIsValid) && ($this->emailIsValid)) {
             return true;
         }
     }
-
 }
