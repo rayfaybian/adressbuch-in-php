@@ -156,7 +156,7 @@ function validateMail($email)
 /*CHECK IF MAIL ALREADY EXISTS*/
 function checkUniqueMail($conn, $email, $id)
 {
-    $qry = mysqli_query($conn, "select * from adressbuch where email='$email' AND NOT id='$id'");
+    $qry = mysqli_query($conn, "select * from adressbuch where email='$email' AND NOT id= $id");
     $result = mysqli_fetch_array($qry);
 
     if ($result == 0) {
