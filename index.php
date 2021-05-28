@@ -1,9 +1,11 @@
-<?php include_once 'includes/dbHandler.php';
+<?php include_once "includes/dbHandler.php";
+
+ini_set("default_charset", "Latin1");
 
 $conn = dbConnect();
 
-if (isset($_GET['id'])) {
-    $id = (int)$_GET['id'];
+if (isset($_GET["id"])) {
+    $id = (int) $_GET["id"];
     deleteEntry($conn, $id);
 }
 
@@ -38,15 +40,18 @@ function deleteEntry($conn, $id)
         </button>
 
         <?php
-        (isset($_GET['order'])) ? $order = mysqli_real_escape_string($conn, $_GET['order']) : $order = "vorname";
-        (isset($_GET['sort'])) ? $sort = mysqli_real_escape_string($conn, $_GET['sort']) : $sort = "ASC";
-
+        isset($_GET["order"])
+            ? ($order = mysqli_real_escape_string($conn, $_GET["order"]))
+            : ($order = "vorname");
+        isset($_GET["sort"])
+            ? ($sort = mysqli_real_escape_string($conn, $_GET["sort"]))
+            : ($sort = "ASC");
 
         $sql = "SELECT * FROM adressbuch LEFT JOIN anrede ON adressbuch.anrede = anrede.anredeID ORDER BY $order $sort";
         $result = mysqli_query($conn, $sql);
         $resultCheck = mysqli_num_rows($result);
 
-        $sort == "DESC" ? $sort = "ASC" : $sort = "DESC";
+        $sort == "DESC" ? ($sort = "ASC") : ($sort = "DESC");
 
         /*Render Table Head*/
         echo "<div class=table id=table>
@@ -67,17 +72,34 @@ function deleteEntry($conn, $id)
         /*Render Table Content if Database is not empty*/
         if ($resultCheck > 0) {
             while ($row = mysqli_fetch_assoc($result)) {
-                echo
-                "<tr>
-        <td>" . $row['anredeText'] . "</td>
-        <td>" . $row['vorname'] . "</td>
-        <td>" . $row['nachname'] . "</td>
-        <td>" . $row['adresse'] . "</td>
-        <td>" . $row['stadt'] . "</td>
-        <td>" . $row['telefon'] . "</td>
-        <td>" . $row['email'] . "</td>
-        <td><a href=form.php?id=" . $row['id'] . "><i class='fas fa-pen'></a></i></td>      
-        <td><a href=index.php?id=" . $row['id'] . "><i class='fas fa-trash'></a></i></td>
+                echo "<tr>
+        <td>" .
+                    $row["anredeText"] .
+                    "</td>
+        <td>" .
+                    $row["vorname"] .
+                    "</td>
+        <td>" .
+                    $row["nachname"] .
+                    "</td>
+        <td>" .
+                    $row["adresse"] .
+                    "</td>
+        <td>" .
+                    $row["stadt"] .
+                    "</td>
+        <td>" .
+                    $row["telefon"] .
+                    "</td>
+        <td>" .
+                    $row["email"] .
+                    "</td>
+        <td><a href=form.php?id=" .
+                    $row["id"] .
+                    "><i class='fas fa-pen'></a></i></td>      
+        <td><a href=index.php?id=" .
+                    $row["id"] .
+                    "><i class='fas fa-trash'></a></i></td>
       </tr>";
             }
         }
