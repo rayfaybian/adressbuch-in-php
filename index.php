@@ -9,6 +9,13 @@ if (isset($_GET["id"])) {
     deleteEntry($conn, $id);
 }
 
+/**
+ * deleteEntry
+ *
+ * @param  mixed $conn  Database connection
+ * @param  mixed $id    id of database entry
+ * @return void
+ */
 function deleteEntry($conn, $id)
 {
     $id = (int) $id;

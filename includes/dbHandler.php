@@ -2,6 +2,11 @@
 
 include_once './config/dbConfig.php';
 
+/**
+ * dbConnect
+ *
+ * @return object representing the connection to the MySQL server
+ */
 function dbConnect()
 {
     $dbServername = DBHOST;
@@ -13,11 +18,9 @@ function dbConnect()
 
     /*CHECK CONNECTION*/
     if (mysqli_connect_errno()) {
-        echo("Connection failed: " . mysqli_connect_error());
+        echo ("Connection failed: " . mysqli_connect_error());
         exit();
     } else {
         return $conn;
     }
 }
-
-

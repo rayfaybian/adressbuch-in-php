@@ -21,6 +21,14 @@ class Validator
         $this->emailIsValid = false;
     }
 
+    /**
+     * validateInput
+     *
+     * @param  mixed $conn  Database connection
+     * @param  mixed $data  Array with data for new database entry
+     * @param  mixed $id    id to edit existing entry
+     * @return boolean
+     */
     public function validateInput($conn, $data, $id)
     {
         $this->vornameIsValid = $this->validateVorname($data);
@@ -32,6 +40,12 @@ class Validator
         }
     }
 
+    /**
+     * validateVorname
+     *
+     * @param  mixed $data  Array with data for new database entry
+     * @return boolean
+     */
     private function validateVorname($data)
     {
         if (!empty($data['vorname'])) {
@@ -42,6 +56,12 @@ class Validator
         }
     }
 
+    /**
+     * validateNachname
+     *
+     * @param  mixed $data  Array with data for new database entry
+     * @return boolean
+     */
     private function validateNachname($data)
     {
         if (!empty($data['nachname'])) {
@@ -52,6 +72,14 @@ class Validator
         }
     }
 
+    /**
+     * validateMail
+     *
+     * @param  mixed $conn  Database connection
+     * @param  mixed $data  Array with data for new database entry
+     * @param  mixed $id    id to exclude for email check
+     * @return boolean
+     */
     private function validateMail($conn, $data, $id)
     {
         if (empty($data['email'])) {
@@ -68,6 +96,12 @@ class Validator
         }
     }
 
+    /**
+     * checkMailPattern
+     *
+     * @param  mixed $email email string
+     * @return boolean
+     */
     private function checkMailPattern($email)
     {
         $pattern =
@@ -75,6 +109,15 @@ class Validator
         return preg_match($pattern, $email);
     }
 
+
+    /**
+     * checkUniqueMail 
+     *
+     * @param  mixed $conn  Database connection
+     * @param  mixed $data  Array with data for new database entry
+     * @param  mixed $id    id to exclude for email check
+     * @return boolean
+     */
     private function checkUniqueMail($conn, $data, $id)
     {
         $email = $data['email'];
@@ -89,31 +132,61 @@ class Validator
         }
     }
 
+    /**
+     * getErrorVorname
+     *
+     * @return string
+     */
     public function getErrorVorname()
     {
         return $this->error_vorname;
     }
 
+    /**
+     * getErrorNachname
+     *
+     * @return string
+     */
     public function getErrorNachname()
     {
         return $this->error_nachname;
     }
 
+    /**
+     * getErrorEmail
+     *
+     * @return string
+     */
     public function getErrorEmail()
     {
         return $this->error_email;
     }
 
+    /**
+     * getErrorClassVorname
+     *
+     * @return string
+     */
     public function getErrorClassVorname()
     {
         return $this->error_class_vorname;
     }
 
+    /**
+     * getErrorClassNachname
+     *
+     * @return string
+     */
     public function getErrorClassNachname()
     {
         return $this->error_class_nachname;
     }
 
+    /**
+     * getErrorClassEmail
+     *
+     * @return string
+     */
     public function getErrorClassEmail()
     {
         return $this->error_class_email;

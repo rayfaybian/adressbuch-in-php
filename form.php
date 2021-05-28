@@ -77,6 +77,11 @@ if (isset($_POST["save"])) {
 }
 
 /*CREATING DATA ARRAY WITH NEW/UPDATED VALUES*/
+/**
+ * getNewData
+ *
+ * @return Array
+ */
 function getNewData()
 {
     return [
@@ -90,6 +95,13 @@ function getNewData()
     ];
 }
 
+/**
+ * escapeString
+ *
+ * @param  mixed $conn  Database connection
+ * @param  mixed $data  Array with data for new database entry
+ * @return Array
+ */
 function escapeString($conn, $data)
 {
     $anrede = mysqli_real_escape_string($conn, $data["anrede"]);
