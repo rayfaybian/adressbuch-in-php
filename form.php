@@ -26,7 +26,7 @@ if (isset($_POST["save"])) {
     $data = $newData = getNewData();
 
     /*VALIDATE REQUIRED FIELDS*/
-    if (checkRequiredFields($conn, $newData, $validator, $id)) {
+    if ($validator->validateInput($conn, $newData, $id)) {
         /*ESCAPE SPECIAL CHARACTERS AFTER VALIDATION*/
         $saveData = escapeString($conn, $newData);
 
@@ -110,63 +110,6 @@ function escapeString($conn, $data)
         "email" => $email,
     ];
 }
-
-/*CHECK IF REQUIRED FIELDS CONTAIN DATA*/
-function checkRequiredFields($conn, $data, $validator, $id)
-{
-    if (empty($data["vorname"])) {
-        $validator->setErrorVorname("Bitte Vorname angeben!");
-        $validator->setErrorClassVorname();
-    } else {
-        $validator->validateVorname();
-    }
-
-    if (empty($data["nachname"])) {
-        $validator->setErrorNachname("Bitte Nachname angeben!");
-        $validator->setErrorClassNachname();
-    } else {
-        $validator->validateNachname();
-    }
-
-    if (empty($data["email"])) {
-        $validator->setErrorEmail("Bitte Email Adresse angeben!");
-        $validator->setErrorClassEmail();
-    } elseif (!validateMail($data["email"])) {
-        $validator->setErrorEmail("Ungültige Email Adresse!");
-        $validator->setErrorClassEmail();
-    } elseif (!checkUniqueMail($conn, $data["email"], $id)) {
-        $validator->setErrorEmail("Email Adresse wird bereits verwendet!");
-        $validator->setErrorClassEmail();
-    } else {
-        $validator->validateEmail();
-    }
-
-    if ($validator->validateInput()) {
-        return true;
-    }
-}
-
-/*CHECK IF EMAIL ADDRESS MATCHES THE REQUIRED REGEX PATTERN*/
-function validateMail($email)
-{
-    $pattern =
-        "/^[a-zA-Z0-9!#$&_*?^{}~-]+(\.?[a-zA-Z0-9!#$&_*?^{}~-]+)*@+([a-z0-9]+([a-z0-9]*)\.)+[a-zA-Z]+$/i";
-    return preg_match($pattern, $email);
-}
-
-/*CHECK IF MAIL ALREADY EXISTS*/
-function checkUniqueMail($conn, $email, $id)
-{
-    $qry = mysqli_query(
-        $conn,
-        "select * from adressbuch where email='$email' AND NOT id= $id"
-    );
-    $result = mysqli_fetch_array($qry);
-
-    if ($result == 0) {
-        return true;
-    }
-}
 ?>
 
 <!DOCTYPE html>
@@ -183,6 +126,9 @@ function checkUniqueMail($conn, $email, $id)
 </head>
 
 <body>
+    <?php if (isset($data)) {
+        echo $data['anrede'];
+    } ?>
     <div class="form-background">
         <header>
             <?php if (isset($data)) {
@@ -199,16 +145,16 @@ function checkUniqueMail($conn, $email, $id)
                 $result = mysqli_query(dbConnect(), $sql);
                 $resultCheck = mysqli_num_rows($result);
                 if (
-                    (isset($data["anrede"]) && $data["anrede"] == 0) ||
+                    ($data['anrede'] == 0) ||
                     !isset($data)
                 ) {
-                    echo "<option selected hidden>Anrede</option>";
+                    echo "<option value=0 selected hidden>Anrede</option>";
                 }
 
                 if ($resultCheck > 0) {
                     while ($row = mysqli_fetch_assoc($result)) {
                         if (
-                            isset($data["anrede"]) &&
+                            isset($data["anrede"]) && $data['anrede'] != 0 &&
                             $data["anrede"] == $row["anredeID"]
                         ) {
                             echo "<option value=" .
@@ -217,11 +163,13 @@ function checkUniqueMail($conn, $email, $id)
                                 $row["anredeText"] .
                                 "</option>";
                         } else {
-                            echo "<option value=" .
-                                $row["anredeID"] .
-                                ">" .
-                                $row["anredeText"] .
-                                "</option>";
+                            if ($row['anredeID'] != 0) {
+                                echo "<option value=" .
+                                    $row["anredeID"] .
+                                    ">" .
+                                    $row["anredeText"] .
+                                    "</option>";
+                            }
                         }
                     };
                 }
