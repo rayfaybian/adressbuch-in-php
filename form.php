@@ -46,7 +46,6 @@ if (isset($_POST["save"])) {
             $sql = "SELECT id FROM adressbuch ORDER BY id DESC LIMIT 1;";
             $result = mysqli_query($conn, $sql);
             $id = mysqli_fetch_assoc($result)["id"];
-            echo $id;
         }
 
         $sql = "UPDATE adressbuch SET anrede=?, vorname=?, nachname=?, adresse=?, stadt=?, telefon=?, email=?
@@ -139,9 +138,6 @@ function escapeString($conn, $data)
 </head>
 
 <body>
-    <?php if (isset($data)) {
-        echo $data['anrede'];
-    } ?>
     <div class="form-background">
         <header>
             <?php if (isset($data)) {
