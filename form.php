@@ -135,6 +135,7 @@ function escapeString($conn, $data)
     <link rel="stylesheet" href="styles/style.css" />
     <title>Kontakt Update</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 
 <body>
@@ -150,7 +151,7 @@ function escapeString($conn, $data)
             } ?>
         </header>
 
-        <form class="input-area" method="POST">
+        <form class="input-area" id="form" method="POST">
             <select name="anrede">
                 <?php
                 $sql = "SELECT * FROM anrede";
@@ -213,27 +214,43 @@ function escapeString($conn, $data)
                                                     } elseif (isset($newData)) {
                                                         echo $newData["stadt"];
                                                     } ?>" placeholder="Stadt" />
-            <input type="text" name="telefon" value="<?php if (isset($data)) {
-                                                            echo $data["telefon"];
-                                                        } elseif (isset($newData)) {
-                                                            echo $newData["telefon"];
-                                                        } ?>" placeholder="Telefon" />
+            <input type="text" id="telefon" name="telefon" value="<?php if (isset($data)) {
+                                                                        echo $data["telefon"];
+                                                                    } elseif (isset($newData)) {
+                                                                        echo $newData["telefon"];
+                                                                    } ?>" placeholder="Telefon" />
 
-            <input type="text" name="email" class="<?php echo $validator->getErrorClassEmail(); ?>" value="<?php if (
-                                                                                                                isset($data)
-                                                                                                            ) {
-                                                                                                                echo $data["email"];
-                                                                                                            } elseif (isset($newData)) {
-                                                                                                                echo $newData["email"];
-                                                                                                            } ?>" placeholder="E-Mail" />
+            <input type="text" id="email" name="email" class="<?php echo $validator->getErrorClassEmail(); ?>" value="<?php if (
+                                                                                                                            isset($data)
+                                                                                                                        ) {
+                                                                                                                            echo $data["email"];
+                                                                                                                        } elseif (isset($newData)) {
+                                                                                                                            echo $newData["email"];
+                                                                                                                        } ?>" placeholder="E-Mail" />
             <div class="error-label">
                 <label><?php echo $validator->getErrorVorname(); ?></label>
                 <label><?php echo $validator->getErrorNachname(); ?></label>
                 <label><?php echo $validator->getErrorEmail(); ?></label>
             </div>
 
-            <?php echo "<button class=save-button type=submit name=save value=save>Speichern</button>"; ?>
+            <?php echo "<button id=save class=save-button type=submit name=save value=save>Speichern</button>"; ?>
         </form>
         <button class="abort-button" onclick=location.href='index.php'>Abbrechen</button>
     </div>
+
+
+    <script>
+        $("#form").submit(function(event) {
+
+            var pattern = "hannex.at";
+            var input = $("#email").val();
+            var lastNine = input.substr(input.length - 9);
+
+            if (pattern == lastNine) {
+                return true;
+            }
+            alert("Email muss auf hannex.at enden")
+            return false;
+        });
+    </script>
 </body>
